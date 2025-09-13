@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Calculator</title>
+    <style>
+        :root {
+            --dark-bg: #1a1a1a;
+            --dark-card: #262626;
+            --light-bg: #f2f2f2;
+            --light-card: #ffffff;
+            --text-primary-light: #000000;
+            --text-primary-dark: #ffffff;
+            --text-secondary-light: #6c757d;
+            --text-secondary-dark: #b0b0b0;
+            --pink-purple-gradient: linear-gradient(to right, #ff3366, #6633ff);
+            --pink-color: #ff3366;
+            --blue-color: #007aff;
+            --red-color: #ff3b30;
+            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            --neu-light-1: -6px -6px 12px rgba(255, 255, 255, 0.7), 6px 6px 12px rgba(0, 0, 0, 0.2);
+            --neu-light-2: 6px 6px 12px rgba(0, 0, 0, 0.2), -6px -6px 12px rgba(255, 255, 255, 0.7);
+            --neu-dark-1: 6px 6px 12px rgba(0, 0, 0, 0.5), -6px -6px 12px rgba(255, 255, 255, 0.1);
+            --neu-dark-2: -6px -6px 12px rgba(0, 0, 0, 0.5), 6px 6px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: var(--dark-bg);
+                color: var(--text-primary-dark);
+            }
+            .card {
+                background-color: var(--dark-card);
+                box-shadow: var(--shadow-dark);
+            }
+            .love-button {
+                box-shadow: var(--neu-dark-1), var(--neu-dark-2);
+            }
+            .progress-bar-bg {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        /* Light Mode */
+        @media (prefers-color-scheme: light) {
+            body {
+                background-color: var(--light-bg);
+                color: var(--text-primary-light);
+            }
+            .card {
+                background-color: var(--light-card);
+                box-shadow: var(--shadow-light);
+            }
+            .love-button {
+                box-shadow: var(--neu-light-1), var(--neu-light-2);
+            }
+            .progress-bar-bg {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: bold;
+            background-image: var(--pink-purple-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 0;
+        }
+
+        .header .icon {
+            color: var(--pink-color);
+            font-size: 24px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary-dark);
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 10px;
+        }
+
+        .input-group {
+            text-align: left;
+        }
+        
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .input-group .icon {
+            font-size: 20px;
+        }
+
+        .input-group .icon.person { color: var(--blue-color); }
+        .input-group .icon.heart { color: var(--red-color); }
+
+        .card {
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 16px;
+            color: inherit;
+        }
+
+        .love-button {
+            border: none;
+            padding: 16px 32px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background-image: var(--pink-purple-gradient);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .love-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .love-button:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            margin-top: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .result-section.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-percentage {
+            font-size: 80px;
+            font-weight: bold;
+            background-image: var(--pink-purple-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .result-message {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .result-names {
+            font-size: 14px;
+            color: var(--text-secondary-dark);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar-bg {
+            height: 100%;
+            width: 100%;
+            border-radius: 6px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 6px;
+            background-image: var(--pink-purple-gradient);
+            width: 0%;
+            transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <span class="icon">❤️</span>
+        <h1>Love Calculator</h1>
+        <span class="icon">❤️</span>
+    </div>
+    <p class="subtitle">Discover your romantic compatibility percentage!</p>
+
+    <div class="form-section">
+        <div class="input-group">
+            <label for="firstName">
+                <span class="icon person">👤</span>
+                First Person
+            </label>
+            <div class="card">
+                <input type="text" id="firstName" placeholder="Enter name...">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="secondName">
+                <span class="icon heart">❤️</span>
+                Second Person
+            </label>
+            <div class="card">
+                <input type="text" id="secondName" placeholder="Enter name...">
+            </div>
+        </div>
+    </div>
+
+    <button class="love-button" onclick="calculate()">
+        Calculate Love ❤️
+    </button>
+
+    <div class="result-section" id="resultSection">
+        <h2 class="result-percentage" id="resultPercentage"></h2>
+        <p class="result-message" id="resultMessage"></p>
+        <p class="result-names" id="resultNames"></p>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar-bg">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const firstName = document.getElementById('firstName').value.trim();
+        const secondName = document.getElementById('secondName').value.trim();
+        
+        if (firstName === "" || secondName === "") {
+            alert("Please enter both names to calculate.");
+            return;
+        }
+
+        const score = calculateLove(firstName, secondName);
+        
+        document.getElementById('resultPercentage').textContent = `${score}%`;
+        document.getElementById('resultMessage').textContent = getMessage(score);
+        document.getElementById('resultNames').textContent = `${firstName} + ${secondName} = ${score}% Compatible!`;
+        document.getElementById('progressBar').style.width = `${score}%`;
+        
+        document.getElementById('resultSection').classList.add('show');
+    }
+
+    function calculateLove(firstName, secondName) {
+        const name1Data = firstName.toLowerCase().replace(/\s/g, '').split('');
+        const name2Data = secondName.toLowerCase().replace(/\s/g, '').split('');
+        
+        const combinedData = name1Data.concat(name2Data);
+        
+        const counts = {};
+        const order = [];
+        
+        combinedData.forEach(char => {
+            if (counts[char]) {
+                counts[char]++;
+            } else {
+                counts[char] = 1;
+                order.push(char);
+            }
+        });
+        
+        const dataArray = order.map(char => counts[char]);
+        
+        const finalData = calculatePoints(dataArray);
+        const finalNumbers = finalData[finalData.length - 1];
+        const finalScore = parseInt(`${finalNumbers[0]}${finalNumbers[1]}`);
+        
+        return finalScore;
+    }
+
+    function calculatePoints(numbers) {
+        let currents = [...numbers];
+        
+        while (currents.length > 2) {
+            let newArray = [];
+            const n = currents.length;
+            
+            for (let i = 0; i < Math.floor(n / 2); i++) {
+                let sum = currents[i] + currents[n - 1 - i];
+                if (sum >= 10) {
+                    newArray.push(Math.floor(sum / 10));
+                    newArray.push(sum % 10);
+                } else {
+                    newArray.push(sum);
+                }
+            }
+            
+            if (n % 2 === 1) {
+                let mid = currents[Math.floor(n / 2)];
+                if (mid >= 10) {
+                    newArray.push(Math.floor(mid / 10));
+                    newArray.push(mid % 10);
+                } else {
+                    newArray.push(mid);
+                }
+            }
+            currents = newArray;
+        }
+        return [currents];
+    }
+    
+    function getMessage(percentage) {
+        if (percentage >= 90) {
+            return "Perfect Match! ❤️‍🔥";
+        } else if (percentage >= 80) {
+            return "Excellent Chemistry! 🤩";
+        } else if (percentage >= 70) {
+            return "Great Compatibility! 🥰";
+        } else if (percentage >= 60) {
+            return "Good Connection! 💫";
+        } else if (percentage >= 50) {
+            return "Fair Match! 💝";
+        } else {
+            return "Keep Trying! 💪🏻";
+        }
+    }
+
+</script>
+
+</body>
+</html>
